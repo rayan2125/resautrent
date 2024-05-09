@@ -8,8 +8,8 @@ import CustomButton from './Custom/customButton'
 import { useDispatch } from 'react-redux'
 import { removeFood } from '../redux/Reducers/foodListingReducers'
 
-const CreateSubcription = ({ foodName, foodPrice, select, onPress, source }) => {
-    // console.log("checking what is coming inside of select",select)
+const CreateSubcription = ({ foodName, foodPrice, select, onPress, source,disabled }) => {
+
     const dispatch = useDispatch();
 
 
@@ -22,6 +22,7 @@ const CreateSubcription = ({ foodName, foodPrice, select, onPress, source }) => 
         <>
             <View style={{ width: "33.33%" }}>
                 <TouchableOpacity
+                disabled={disabled}
                     onPress={onPress}
                     style={{
                         alignItems: "center",
@@ -31,21 +32,25 @@ const CreateSubcription = ({ foodName, foodPrice, select, onPress, source }) => 
                         marginVertical: 10,
                         backgroundColor: colors.White,
                         borderRadius: 15,
-                        paddingHorizontal: 20,
-                        paddingVertical: 20,
+                        // paddingHorizontal: 20,
+                        paddingVertical: 15,
                         marginTop: 20,
+                        // height:140
                     }}
                 >
+                    <View style={{}}>
 
-                    <Image
-                        source={source}
-                        resizeMode="contain"
-                        style={{ height: 50, width: 50, borderRadius: 15, }}
-                    />
+                        <Image
+                            source={source}
+                            resizeMode="contain"
+                            style={{ height: 50, width: 50, borderRadius: 15, }}
+                        />
+                    </View>
 
-                    <View style={{ alignItems: "center" }}>
-                        <Text style={{ color: colors.textColor }}>{foodName}</Text>
-                        <Text style={{ fontSize: 20, color: colors.textColor }}>{foodPrice}Rs</Text>
+                    <View style={{ alignItems: "center", height: 70, gap: 10 }}>
+                        <Text style={{ color: colors.textColor, textAlign: 'center', fontSize: 12, fontWeight: "500" }}>{foodName}</Text>
+                        <Text style={{ fontSize: 24, color: colors.textColor, fontWeight: '500', position: 'absolute', bottom: 0, }}>{foodPrice}
+                            <Text style={{ color: colors.Primary, fontSize: 18 }}>{'\u20B9'}</Text></Text>
                     </View>
                 </TouchableOpacity>
                 {select && (

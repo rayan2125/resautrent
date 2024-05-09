@@ -2,6 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   foodList: [],
+  imgUrl:[]
 };
 
 const foodListingSlice = createSlice({
@@ -10,6 +11,9 @@ const foodListingSlice = createSlice({
   reducers: {
     addFood: (state, action) => {
       state.foodList.push(action.payload);
+    },
+    addImgUrl:(state,action)=>{
+      state.imgUrl ,action.payload
     },
     removeFood: (state, action) => {
       state.foodList = state.foodList.filter(
@@ -22,6 +26,6 @@ const foodListingSlice = createSlice({
   },
 });
 
-export const { addFood, removeFood, removeAllFood } = foodListingSlice.actions;
+export const { addFood,addImgUrl, removeFood, removeAllFood } = foodListingSlice.actions;
 
 export default foodListingSlice.reducer;

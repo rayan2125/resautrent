@@ -7,20 +7,31 @@ import store from './redux/store'
 import { PersistGate } from 'redux-persist/integration/react'
 import { persistStore } from 'redux-persist'
 import { NativeBaseProvider } from 'native-base'
+import { DefaultTheme, PaperProvider } from 'react-native-paper'
 
 
 
 const App = () => {
   let persistor = persistStore(store)
+  const theme={
+    ...DefaultTheme,
+    roundness: 20,
+    colors: {
+      ...DefaultTheme.colors,
+      primary: colors.Primary,
+    },
+
+  }
   return (
 
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <NativeBaseProvider>
-
+        <PaperProvider theme={theme}>
           <NavigationContainer>
             <RootNavigation />
           </NavigationContainer>
+          </PaperProvider>
         </NativeBaseProvider>
       </PersistGate>
 

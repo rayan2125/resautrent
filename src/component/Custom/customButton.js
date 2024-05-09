@@ -6,9 +6,9 @@ import { Icon, MD3Colors } from 'react-native-paper';
 import icons from '../../assets/config/icons';
 
 
-const CustomButton = ({ btnName, onPress, backgroundColor, source ,borderColor,borderWidth,textColor}) => {
+const CustomButton = ({ btnName, onPress, backgroundColor, source ,borderColor,borderWidth,textColor,width,fontSize}) => {
     return (
-        <View style={{}}> 
+        <View style={{width:width,elevation:9}}> 
             <TouchableOpacity
                 onPress={onPress}
                 style={{
@@ -18,7 +18,7 @@ const CustomButton = ({ btnName, onPress, backgroundColor, source ,borderColor,b
                     borderWidth:borderWidth,
                     paddingHorizontal:5,paddingVertical:8, borderRadius: 25
                 }}>
-                <Text style={{ color: textColor, marginHorizontal: 10, fontSize: 18 }}>{btnName}</Text>
+                <Text style={{ color: textColor, marginHorizontal: 10, fontSize: fontSize }}>{btnName}</Text>
                 <Icon
                     // size={20}
                     source={source}

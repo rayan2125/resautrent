@@ -31,6 +31,9 @@ const Home = () => {
     else if (item.id === 2) {
       navigation.navigate("OrderCancel")
     }
+    else if (item.id === 3) {
+      navigation.navigate("MenuItems")
+    }
     else if (item.id === 4) {
       navigation.navigate("FoodListingScreen")
     }

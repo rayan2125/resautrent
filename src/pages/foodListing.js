@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, TouchableOpacity, ScrollView, Image, FlatList } from 'react-native'
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { Icon, TextInput } from 'react-native-paper'
 import colors from '../assets/config/colors'
 import CustomForm from '../component/Custom/customForm'
@@ -12,16 +12,26 @@ import { formData } from '../services/Dummy/formData'
 import RBSheet from "react-native-raw-bottom-sheet";
 import { useDispatch, useSelector } from 'react-redux'
 import { addFood } from '../redux/Reducers/foodListingReducers'
-import { callAxios, callAxiosWithFormData } from '../services/api'
+import { callAxiosGet, callAxiosWithFormData } from '../services/api'
 import { API_CONSTANTS } from '../assets/config/constant'
+import { PacmanIndicator } from "react-native-indicators"
+import mime from "mime";
+import CustomAlert from '../component/Custom/customAlert'
 
 const FoodListingForm = () => {
     const foodListSelector = useSelector(state => state.foodlisting.foodList)
+    let token = useSelector(state => state?.auth.authData?.token)
+
+
 
     const dispatch = useDispatch()
 
+    useEffect(() => {
+        fetchData()
+    }, [])
     const numColumns = 3
     const navigation = useNavigation()
+    const [data, setData] = useState();
 
     const [openCamera, setOpenCamera] = useState(false)
     const [openCat, setOpenCat] = useState(false)
@@ -31,26 +41,44 @@ const FoodListingForm = () => {
     const [selectedSubCat, setSelectedSubCat] = useState("Enter Your Sub Category")
     const [selectedPreffer, setSelectedPreffer] = useState("Enter Your Preffer")
     const [upLoad, setUpLoad] = useState([]);
-    const [error, setError] = useState('')
-
-
+    const [loader, setLoader] = useState(false)
+    const [resMesg, setResMesg] = useState('')
+    const [status, setStatus] = useState(false)
+    const [serverMsg, setServerMsg] = useState('')
     const refRBSheet = useRef();
     const [state, setState] = useState({
-        name: 'test',
-        price: 'test',
+        name: '',
+        price: '',
         type: 'veg',
-        prefer: 'test',
-        description: 'test',
-        category: 'test',
-        subCategory: 'test',
+        prefer: 'Dinner',
+        description: '',
+        category: '',
+        subCategory: '',
 
 
 
     })
+    const [errors, setErrors] = useState({
+        name: '',
+        price: '',
+        description: '',
+        category: '',
+        subCategory: '',
+        prefer: '',
+        price: '',
+
+    });
 
     const [file, setFile] = useState('')
-    console.log(file)
 
+
+    const filename = file && file.uri ? file.uri.replace('file:///', 'file://') : '';
+    let imagedata = {
+        uri: filename,
+        name: file?.fileName,
+        type: file?.type
+    }
+    const newImageUri = file && file.uri ? "file:///" + file.uri.split("file:/").join("") : "";
     const catData = [
         { id: 1, label: 'Fast Food' },
         { id: 2, label: 'Indian Food' },
@@ -94,7 +122,7 @@ const FoodListingForm = () => {
             setOpenCat(!openCat)
             setState((prevState) => ({
                 ...prevState,
-                foodCategory: selectedItem.label
+                category: selectedItem.label
             }));
 
         }
@@ -103,7 +131,7 @@ const FoodListingForm = () => {
             setOpenSubCat(!openSubCat)
             setState((prevState) => ({
                 ...prevState,
-                foodSubcategory: selectedItem.label
+                subCategory: selectedItem.label
             }));
         }
         if (id === 5) {
@@ -111,7 +139,7 @@ const FoodListingForm = () => {
             setOpenPreffer(!openPreffer)
             setState((prevState) => ({
                 ...prevState,
-                preferredFor: selectedItem.label
+                prefer: selectedItem.label
             }));
         }
     };
@@ -187,7 +215,7 @@ const FoodListingForm = () => {
         const updatedImages = [...upLoad];
         updatedImages.splice(index, 1); // Remove the image at the specified index
         setUpLoad(updatedImages);
-        setFile(response.assets[0])
+        setFile("")
     };
     const ImageGrid = ({ images, numColumns }) => {
         const renderImageGrid = () => {
@@ -221,29 +249,128 @@ const FoodListingForm = () => {
             </ScrollView>
         );
     };
-    const handleSumbit = async (state) => {
-        try {
-            let formData = new FormData();
-            formData.append("name", state.name);
-            formData.append("price", state.price);
-            formData.append("type", state.type);
-            formData.append("prefer", state.prefer);
-            formData.append("description", state.description);
-            formData.append("category", state.category);
-            formData.append("subCategory", state.subCategory);
-            formData.append('image', {
-                uri: "a4c8e9-9dc2-4946-a49d-379e1485c5ef.jpg",
-                type: 'image/jpeg',
-                name: 'd7fe29b8-9acb-4e94-9df3-41017f508d82.jpg'
-            });
+    const validateForm = () => {
+        let isValid = true;
+        const newErrors = { ...errors };
 
-            const response = await callAxiosWithFormData(API_CONSTANTS.createItem, {formData});
-            console.log("checking response is ", response.data);
-            // Handle the response or any further logic here
-        } catch (error) {
-            console.log("checking error is", error);
-            // Handle errors here
+        if (state.name.trim() === '') {
+            newErrors.name = 'Name is required';
+            isValid = false;
+        } else {
+            newErrors.name = '';
         }
+
+        if (state.prefer.trim() === '') {
+            newErrors.price = 'Prefer is required';
+            isValid = false;
+        } else {
+            newErrors.price = '';
+        }
+
+        if (state.description.trim() === '') {
+            newErrors.description = 'Description is required';
+            isValid = false;
+        } else {
+            newErrors.description = '';
+        }
+
+        if (state.category.trim() === '') {
+            newErrors.category = 'Category is required';
+            isValid = false;
+        } else {
+            newErrors.category = '';
+        }
+        if (state.price.trim() === '') {
+            newErrors.price = 'Price is required';
+            isValid = false;
+        } else {
+            newErrors.category = '';
+        }
+        if (state.subCategory.trim() === '') {
+            newErrors.subCategory = 'Sub Category is required';
+            isValid = false;
+        } else {
+            newErrors.subCategory = '';
+        }
+
+
+        setErrors(newErrors);
+        return isValid;
+    };
+    const fetchData = () => {
+        callAxiosGet(API_CONSTANTS.listingItem)
+            .then(res => {
+
+                let listFood = res.data.list
+                // console.log("checking are coming ",listFood)
+                setData(listFood);
+
+                fetchAllImages(listFood, res.data.userId);
+            })
+            .catch(err => {
+
+            });
+    };
+    const handleSumbit = async (field) => {
+
+        if (!validateForm()) {
+            return;
+        }
+        setLoader(true)
+        let formData = new FormData();
+        let price = state.price + 18 / 100
+
+        formData.append('name', state.name)
+        formData.append('price', state.price)
+        formData.append('type', state.type)
+        formData.append('prefer', state.prefer)
+        formData.append('description', state.description)
+        formData.append('category', state.category)
+        formData.append('subCategory', state.subCategory)
+        formData.append('images', {
+            uri: newImageUri,
+            type: mime.getType(newImageUri),
+            name: newImageUri.split("/").pop()
+        });
+        callAxiosWithFormData(API_CONSTANTS.createItem, formData).then(res => {
+            
+            setLoader(false)
+            setStatus(true)
+
+            let responce = res.data
+            console.log("res::", res)
+            if (responce.error) {
+                let err = responce.error
+                if (err === "Request failed with status code 409") {
+                    setResMesg("Failed")
+                    setServerMsg("This Food Already have Exit! Please Add other Food")
+                } else if (err === "Network Error") {
+                    setServerMsg("Please Check Your Internet")
+                }
+
+            }
+            else {
+
+                if (responce.status === "Success") {
+                    setResMesg("Success")
+                    setServerMsg(responce.message)
+
+                } else if (responce) { setResMesg("Failed"), setServerMsg(responce.data.error.message) }
+            }
+
+
+
+        }).catch(err => {
+            {
+                console.log("is error ", err)
+                console.log("checking data is ")
+                // setResMesg("Failed"), setServerMsg(err)
+            }
+        })
+        // setTimeout(() => {
+        //     setLoader(false)
+        // }, 2000);
+
     }
 
     return (
@@ -252,17 +379,9 @@ const FoodListingForm = () => {
                 showsVerticalScrollIndicator={false}
                 nestedScrollEnabled={true}
             >
-                {
-                    foodListSelector.length > 0 &&
-                    <TouchableOpacity
-                        onPress={() => navigation.pop()}
-                        style={{ backgroundColor: colors.Primary, height: 45, width: 45, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}>
-                        <Icon source="chevron-left" size={25} color={colors.White} />
-                    </TouchableOpacity>}
                 <View>
 
-                    <View style={{ marginTop: 20 }}>
-
+                    <View style={{ marginTop: 20, flex: 1 }}>
 
                         {formData &&
                             formData.map((item, index) => {
@@ -272,7 +391,7 @@ const FoodListingForm = () => {
                                         <CustomForm
                                             title={item.name}
                                             mode="outlined"
-                                            multiline={item.id === 2}
+                                            // multiline={item.id === 2}
                                             onChangeText={(text) => handlechange(item.field, text)}
                                             value={
                                                 item.id === 3 ? selectedCat :
@@ -284,6 +403,7 @@ const FoodListingForm = () => {
                                             right={item.id === 3 || item.id === 4 || item.id === 5 ?
                                                 <TextInput.Icon icon={icons.down} color={colors.Primary} onPress={() => handleDrop(item.id)} /> : {}
                                             }
+                                            error={errors[item.field]}
                                         />
 
                                         {item.id === 3 && openCat && <CustomDropDown data={catData} onSelect={(value) => handleSelectValue(item.id, value)} />}
@@ -300,12 +420,13 @@ const FoodListingForm = () => {
                                     title="Price"
                                     mode="outlined"
                                     keyboardType='number-pad'
+                                    error={errors.price}
                                     onChangeText={(text) =>
                                         setState((prevState) => ({
                                             ...prevState,
-                                            foodPrice: text
+                                            price: text
                                         }))}
-                                    value={state.foodPrice}
+                                    value={state.price}
                                     right={<TextInput.Icon icon='currency-rupee' />}
                                 />
                             </View>
@@ -320,8 +441,23 @@ const FoodListingForm = () => {
                                 />
                             </View>
                         </View>
+                        {
+                            loader &&
+                            <View style={{ borderRadius: 100, right: "42%", bottom: "50%", position: "absolute", justifyContent: "center", alignItems: "center", zIndex: 9, backgroundColor: "white" }}>
 
-
+                                <PacmanIndicator
+                                    size={70}
+                                    color={colors.Primary}
+                                />
+                            </View>
+                        }
+                        {status &&
+                            <CustomAlert
+                                displayMsg={resMesg}
+                                dismissAlert={() => setStatus(false)}
+                                message={serverMsg}
+                            />
+                        }
                         {upLoad && upLoad.length > 0 ? (
                             <View style={{ marginBottom: 20 }}>
 

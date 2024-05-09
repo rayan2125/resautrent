@@ -5,6 +5,7 @@ export const authSlice = createSlice({
     initialState: {
         isLoggedIn: false,
         authData: null,
+        location:[],
     },
     reducers: {
         setAuthdata(state, action) {
@@ -15,6 +16,9 @@ export const authSlice = createSlice({
             state.isLoggedIn = false;
             state.authData = null;
         },
+        loc(state,action){
+            state.location=action.payload
+        }
         // authToken(state){
         //     state.isLoggedIn=true;
         //     state.authData=action.payload
@@ -24,7 +28,7 @@ export const authSlice = createSlice({
 
 
 
-export const { setAuthdata, logout, } = authSlice.actions;
+export const { setAuthdata, logout,loc } = authSlice.actions;
 
 
 export default authSlice.reducer;

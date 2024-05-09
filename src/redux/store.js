@@ -11,8 +11,12 @@ import {
   REGISTER
 } from "redux-persist";
 import foodListingReducers from "./Reducers/foodListingReducers";
-import subcriptionListingReducers from './Reducers/subcriptionListingReducers';
 import authReducers from './Reducers/authReducers';
+import perInfoReducers from './Reducers/perInfoReducers';
+import regFormReducers from './Reducers/regFormReducers';
+import subscriptionReducers from './Reducers/subscriptionReducers';
+
+
 
 const persistConfig = {
   key: 'root',
@@ -20,9 +24,11 @@ const persistConfig = {
   blacklist: ['err'],
 }
 const reducer = combineReducers({
-  auth:authReducers,
+  auth: authReducers,
   foodlisting: foodListingReducers,
-  subcribeListing: subcriptionListingReducers
+  prnInfo: perInfoReducers,
+  registrationForm: regFormReducers,
+  subciptions: subscriptionReducers
 })
 
 const persistReducers = persistReducer(persistConfig, reducer)

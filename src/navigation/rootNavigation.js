@@ -14,6 +14,20 @@ import OrderCancel from '../screens/orderCancel';
 import { useSelector } from 'react-redux';
 import Trending from '../screens/trendind';
 import SlashScreen from '../screens/slashScreen';
+import Registration from '../screens/registration';
+import Personalform from '../pages/Forms/personalDoc';
+
+import BackAdharCardFrom from '../pages/Forms/backAdharCardfrom';
+import FrontAdharcardForm from '../pages/Forms/frontAdharCardform';
+import PanCardForm from '../pages/Forms/panCardform';
+import Bankform from '../pages/Forms/bankform';
+import RestoDetail from '../pages/Forms/restoDetail';
+import PersonalDoc from '../pages/Forms/personalDoc';
+import PersonalInfo from '../pages/Forms/personalInfo';
+import MenuItems from '../screens/menuItems';
+import StepperForm from '../pages/Forms/stepperForm';
+import AfterRegistration from '../screens/afterRegistration';
+
 
 
 
@@ -24,7 +38,7 @@ const RootNavigation = () => {
 
   let suffleScreen = selector === null ? 'Login' : 'Home'
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="SlashScreen">
+    <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName="map">
       <Stack.Screen name='SlashScreen' component={SlashScreen} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name='Login' component={Login} />
@@ -37,6 +51,17 @@ const RootNavigation = () => {
       <Stack.Screen name='ManageSubcription' component={ManageSubcription} />
       <Stack.Screen name='OrderCancel' component={OrderCancel} />
       <Stack.Screen name='Trending' component={Trending} />
+      <Stack.Screen name='Registration' component={Registration}/>
+      <Stack.Screen name='PersonalInfo' component={PersonalInfo}/>
+     <Stack.Screen name='PersonalDoc' component={PersonalDoc}/> 
+     <Stack.Screen name='FrontAdharCardForm' component={FrontAdharcardForm}/>
+      <Stack.Screen name='BackAdharCardFrom' component={BackAdharCardFrom}/>
+      <Stack.Screen name='PanCardForm' component={PanCardForm}/>
+      <Stack.Screen name='Bankform' component={Bankform}/>
+      <Stack.Screen name='RestoDetail' component={RestoDetail}/>
+      <Stack.Screen name='MenuItems' component={MenuItems}/>
+      <Stack.Screen name='StepperForm' component={StepperForm}/>
+      <Stack.Screen name='AfterRegistration' component={AfterRegistration}/>
     </Stack.Navigator>
 
   )

@@ -1,5 +1,5 @@
-import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, ToastAndroid, TouchableOpacity, View } from 'react-native';
-import React, { useState } from 'react';
+import { Image, KeyboardAvoidingView, Platform, StyleSheet, Text, PermissionsAndroid, TouchableOpacity, View, ToastAndroid } from 'react-native';
+import React, { useEffect, useState } from 'react';
 import { PaperProvider, DefaultTheme, MD2Colors, ActivityIndicator } from 'react-native-paper';
 import CustomForm from '../../component/Custom/customForm';
 import CustomButton from '../../component/Custom/customButton';
@@ -7,15 +7,17 @@ import colors from '../../assets/config/colors';
 import { useNavigation } from '@react-navigation/native';
 import Api, { callAxios } from '../../services/api';
 import { API_CONSTANTS } from '../../assets/config/constant';
-
-import CustomDialog from '../../component/CustomButton/dialog';
-import { Failed, Success } from '../../services/utilities';
+import Geolocation from 'react-native-geolocation-service';           
+import { Failed, Pending, Success } from '../../services/utilities';
 import { useDispatch, useSelector } from 'react-redux';
-import { authToken, logout, setAuthdata } from '../../redux/Reducers/authReducers';
+import { authToken, loc, logout, setAuthdata } from '../../redux/Reducers/authReducers';
 import { useNetInfo } from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Login = () => {
+  useEffect(() => {
+    requestCameraPermission()
+  })
   const dispatch = useDispatch()
   const selector = useSelector(state => state.auth.authData)
   const netInfo = useNetInfo()
@@ -30,7 +32,9 @@ const Login = () => {
   })
   const [loader, setLoader] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+ 
   const [successMessage, setSuccesMessage] = useState('')
+  const [pendingMessage, setPendingMessage] = useState('')
   const [emailError, setEmailError] = useState('')
   const [passwordError, setPasswordError] = useState('')
   const [visibleDialog, setVisibleDialog] = useState(true);
@@ -69,7 +73,7 @@ const Login = () => {
       if (isValid) {
         callAxios(API_CONSTANTS.login, state)
           .then((res) => {
-              console.log(res)
+            
             if (res.data.status === "Success") {
               let authData = res.data
               let token = res.data.token
@@ -93,6 +97,22 @@ const Login = () => {
               }
               setState({ ...state, userEmail: '', passWord: '' })
 
+            } else if (res.data.status === "Pending") {
+              
+              setStatus(3)
+              setLoader(false)
+              setPendingMessage(res.data)
+              setState({ ...state, userEmail: '', passWord: '' })
+              setTimeout(() => {
+                setStatus('')
+              }, 2000);
+            } else if(res.data.error="undefined"){
+              setLoader(false)
+              ToastAndroid.show("NetWork Problem Please Try after Sometime...!", ToastAndroid.SHORT);
+              setState({ ...state, userEmail: '', passWord: '' })
+              setTimeout(() => {
+                setStatus('')
+              }, 2000);
             }
             else {
               const errorMsg = res.data.error.data
@@ -100,6 +120,9 @@ const Login = () => {
               setStatus(2)
               setLoader(false)
               setState({ ...state, userEmail: '', passWord: '' })
+              setTimeout(() => {
+                setStatus('')
+              }, 2000);
             }
 
           }
@@ -136,7 +159,44 @@ const Login = () => {
   const handleLogout = () => {
     dispatch(logout())
   }
+  const requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
 
+        Geolocation.getCurrentPosition(
+          (position) => {
+
+            const { latitude, longitude } = position.coords;
+            dispatch(loc(position.coords))
+          },
+          (error) => {
+
+          },
+          { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+
+        );
+
+
+
+      } else {
+
+      }
+    } catch (err) {
+
+    }
+  };
 
 
   return (
@@ -180,7 +240,12 @@ const Login = () => {
                     <Failed
 
                       message={errorMessage.message}
-                    /> : {}
+                    /> :
+                    status === 3 ?
+                      <Pending 
+                      message={pendingMessage.message}
+                      /> :
+                      {}
               }
             </View>}
 
@@ -209,14 +274,17 @@ const Login = () => {
             <View style={{ gap: 20, marginTop: 20 }}>
               <CustomButton
                 btnName="Login"
+                textColor={colors.White}
                 backgroundColor={colors.Primary}
                 onPress={handleSubmit}
               />
               <CustomButton
                 backgroundColor={colors.green}
+                textColor={colors.White}
                 btnName="Register"
-                onPress={() => navigation.navigate("Register")}
+                onPress={() => navigation.navigate("StepperForm")}
               />
+
             </View>
             <TouchableOpacity
               onPress={handleLogout}

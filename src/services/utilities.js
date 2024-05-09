@@ -1,4 +1,4 @@
-import { Alert, Box, Center, CloseIcon, HStack, IconButton, Text, VStack ,Stack} from "native-base";
+import { Alert, Box, Center, CloseIcon, HStack, IconButton, Text, VStack ,Stack, Spinner, Heading} from "native-base";
 
 export const Success = ({ title, message }) => {
   return (
@@ -58,6 +58,35 @@ export const Failed = ({  message }) => {
       </Center>
     );
   };
+  export const Pending = ({  message }) => {
+    return (
+      <Center  justifyContent="center">
+        <VStack space={5} >
+          <Alert  status="warning" variant="left-accent">
+            <VStack space={1} flexShrink={1} w="100%" flexDirection="row" alignItems="center">
+              <Alert.Icon size="md"  />
+              
+  
+              <Box
+                _text={{
+                  textAlign: "center"
+                }}
+                ml="5"
+                marginRight='5'
+                _dark={{
+                  _text: {
+                    color: "coolGray.600"
+                  }
+                }}
+              >
+                {message}
+              </Box>
+            </VStack>
+          </Alert>
+        </VStack>
+      </Center>
+    );
+  };
 
 //   export function Example() {
     
@@ -83,3 +112,11 @@ export const Failed = ({  message }) => {
     
 //       </Stack>;
 //   }
+// export const CustomLoader = () => {
+//   return <HStack space={2} justifyContent="center">
+//       <Spinner accessibilityLabel="Loading posts" />
+//       <Heading color="primary.500" fontSize="md">
+//         Loading
+//       </Heading>
+//     </HStack>;
+// };

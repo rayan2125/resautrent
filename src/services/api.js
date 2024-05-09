@@ -26,6 +26,22 @@ function getToken() {
   });
 }
 
+async function registerUser(userData) {
+  try {
+    const baseUrl = await getBaseUrl();
+    const response = await axios.post(baseUrl + API_CONSTANTS.merchantUser, userData);
+    if (response.data.success) {
+      return { success: true, data: response.data };
+    } else {
+      return { success: false, data: response.data };
+    }
+  } catch (error) {
+    return { success: false, error, data: 'Some Error occurred!' };
+  }
+}
+
+
+
 async function callAxios(endPoint, reqData, auth = true) {
   try {
     const [baseUrl, token] = await Promise.all([getBaseUrl(), getToken()]);
@@ -34,6 +50,7 @@ async function callAxios(endPoint, reqData, auth = true) {
 
     const response = await axios.post(
       baseUrl + endPoint,
+      
       { ...reqData },
       {
         headers: {
@@ -44,7 +61,6 @@ async function callAxios(endPoint, reqData, auth = true) {
       },
 
     );
-    console.log("checking responce is :==", response)
     if (response.data.access_token) {
       return { success: true, data: response.data, message: response.data.message };
     } if (response.data.aaData) {
@@ -52,10 +68,11 @@ async function callAxios(endPoint, reqData, auth = true) {
     } else if (response.data.status === "success") {
       return { success: true, data: response.data, message: response.data.message };
     } else {
-      return { success: false, data: response.data, message: response.data.message };
+      return { success: true, data: response.data, message: response.data.message };
     }
   } catch (error) {
 
+   
     return {
 
       success: false,
@@ -66,26 +83,33 @@ async function callAxios(endPoint, reqData, auth = true) {
     };
   }
 }
-async function callAxiosWithFormData(endPoint, reqData,  auth = true) {
- console.log(reqData)
+async function callAxiosWithFormData(endPoint, reqData,auth = true) {
+ 
   try {
     const [baseUrl, token] = await Promise.all([getBaseUrl(), getToken()]);
     const authtoken = auth ? 'Bearer ' + token : "";
 
-    
+
 
     const response = await axios.post(
       baseUrl + endPoint,
-      {...reqData},
+      reqData,
+ 
       {
         headers: {
-          'Content-Type': 'multipart/form-data',
-          'Authorization': authtoken
+         
+          'Accept':'*/*',
+          'Content-Type':'multipart/form-data',
+          'Authorization': authtoken,
+          'accept-encoding': 'gzip, deflate, br',
+          
+          
         }
+        
       }
     );
 
-    console.log("checking response: ", response);
+
 
     if (response.data.access_token) {
       return { success: true, data: response.data, message: response.data.message };
@@ -101,7 +125,8 @@ async function callAxiosWithFormData(endPoint, reqData,  auth = true) {
       success: false,
       data: {
         message: 'Some Error occurred!',
-        error: error.response
+        error: error.response,
+        error:error.message
       }
     };
   }
@@ -183,6 +208,7 @@ async function callAxiosGetWithoutSession(endPoint) {
 
 export {
   callAxios,
+  registerUser,
   callAxiosGet,
   callAxiosWithFormData,
   callAxiosWithoutSession,
