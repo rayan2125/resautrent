@@ -7,7 +7,7 @@ import colors from '../../assets/config/colors';
 import { useNavigation } from '@react-navigation/native';
 import Api, { callAxios } from '../../services/api';
 import { API_CONSTANTS } from '../../assets/config/constant';
-import Geolocation from 'react-native-geolocation-service';           
+import Geolocation from 'react-native-geolocation-service';
 import { Failed, Pending, Success } from '../../services/utilities';
 import { useDispatch, useSelector } from 'react-redux';
 import { authToken, loc, logout, setAuthdata } from '../../redux/Reducers/authReducers';
@@ -32,7 +32,7 @@ const Login = () => {
   })
   const [loader, setLoader] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
- 
+
   const [successMessage, setSuccesMessage] = useState('')
   const [pendingMessage, setPendingMessage] = useState('')
   const [emailError, setEmailError] = useState('')
@@ -73,7 +73,6 @@ const Login = () => {
       if (isValid) {
         callAxios(API_CONSTANTS.login, state)
           .then((res) => {
-            
             if (res.data.status === "Success") {
               let authData = res.data
               let token = res.data.token
@@ -98,7 +97,7 @@ const Login = () => {
               setState({ ...state, userEmail: '', passWord: '' })
 
             } else if (res.data.status === "Pending") {
-              
+
               setStatus(3)
               setLoader(false)
               setPendingMessage(res.data)
@@ -106,9 +105,19 @@ const Login = () => {
               setTimeout(() => {
                 setStatus('')
               }, 2000);
-            } else if(res.data.error="undefined"){
+            } else if (res.data.error) {
+              setStatus(3)
               setLoader(false)
-              ToastAndroid.show("NetWork Problem Please Try after Sometime...!", ToastAndroid.SHORT);
+              setPendingMessage(res.data.error.data)
+              setState({ ...state, userEmail: '', passWord: '' })
+              setTimeout(() => {
+                setStatus('')
+              }, 2000);
+            }
+
+            else if (res.data.error = "undefined") {
+              setLoader(false)
+              ToastAndroid.show("NetWork Problem Please Try after Sometime...!>>", ToastAndroid.SHORT);
               setState({ ...state, userEmail: '', passWord: '' })
               setTimeout(() => {
                 setStatus('')
@@ -242,8 +251,8 @@ const Login = () => {
                       message={errorMessage.message}
                     /> :
                     status === 3 ?
-                      <Pending 
-                      message={pendingMessage.message}
+                      <Pending
+                        message={pendingMessage.message}
                       /> :
                       {}
               }

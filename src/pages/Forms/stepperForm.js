@@ -10,7 +10,7 @@ import colors from '../../assets/config/colors';
 import Bankform from './bankform';
 import RestoDetail from './restoDetail';
 import PersonalInfo from './personalInfo';
-import { callAxios, callAxiosWithFormData, registerUser } from '../../services/api';
+import { callAxios, callAxiosWithFormData, callAxiosWithFormDataRegister, registerUser } from '../../services/api';
 import { API_CONSTANTS } from '../../assets/config/constant';
 import { useDispatch, useSelector } from 'react-redux';
 import mime from 'mime';
@@ -20,10 +20,11 @@ import FssaiForm from './fssaiform';
 import MPanCardForm from './mPanCardform';
 import CustomAlert from '../../component/Custom/customAlert';
 import { useNavigation } from '@react-navigation/native';
+import { PacmanIndicator } from "react-native-indicators"
 import { removeFssai, removeMPan, removebadhar, removecheque, removefadhar, removemImg, removepan } from '../../redux/Reducers/perInfoReducers';
 const StepperForm = () => {
     const dispatch = useDispatch()
-    let locSelector = useSelector((state)=>state.auth.location)
+    let locSelector = useSelector((state) => state.auth.location)
     let selector = useSelector((state) => state.prnInfo)
     let navigation = useNavigation()
     let back = selector.badharInfo
@@ -78,7 +79,7 @@ const StepperForm = () => {
     const [errors, setErrors] = useState({});
     const [resStatus, setResStatus] = useState(false)
     const [isConnected, setIsConnected] = useState(true);
-
+    const [isactive, setActive] = useState(false)
 
 
     const validateStep = async () => {
@@ -121,7 +122,7 @@ const StepperForm = () => {
             } catch (error) {
                 console.error('Error registering user:', error);
                 ToastAndroid.show("Network problem. Please try again later.", ToastAndroid.SHORT);
-                return false; 
+                return false;
             }
         }
 
@@ -237,20 +238,20 @@ const StepperForm = () => {
         return isValid;
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
+        try {
+            const formData = new FormData();
 
-        const formData = new FormData();
-        const isValid = validateAddress();
-        if (isValid) {
-            console.log("data is mining 1")
+            setActive(true);
+
             formData.append('name', state.userName);
             formData.append('email', state.userEmail);
             formData.append('password', state.userPassword);
-            formData.append('cNumber', state.userNumber)
+            formData.append('cNumber', state.userNumber);
             formData.append('mName', rstate.name);
             formData.append('mEmail', rstate.email);
             formData.append('mContact', rstate.number);
-            formData.append('gst', rstate.gst)
+            formData.append('gst', rstate.gst);
             formData.append('area', addstate.address);
             formData.append('street', addstate.address);
             formData.append('landmark', addstate.landmark);
@@ -258,7 +259,7 @@ const StepperForm = () => {
             formData.append('state', addstate.hState);
             formData.append('zipCode', addstate.zipcode);
             formData.append('latitude', locSelector.latitude);
-            formData.append('longitude', locSelector.longitude)
+            formData.append('longitude', locSelector.longitude);
             formData.append('startTime', rstate.startTime);
             formData.append('endTime', rstate.endTime);
             formData.append('accountNumber', bstate.account);
@@ -266,69 +267,61 @@ const StepperForm = () => {
             formData.append('bankName', bstate.bankName);
             formData.append('ifscCode', bstate.ifsc);
             formData.append('bankAddress', bstate.address);
-            formData.append('adharFront', {
-                uri: frontAdharUri,
-                type: mime.getType(frontAdharUri),
-                name: frontAdharUri.split("/").pop()
-            });
-            formData.append('adharBack', {
-                uri: backAdharUri,
-                type: mime.getType(backAdharUri),
-                name: backAdharUri.split("/").pop()
-            });
-            formData.append('panCard', {
-                uri: panUri,
-                type: mime.getType(panUri),
-                name: panUri.split("/").pop()
-            });
-            formData.append('mImage', {
-                uri: frontAdharUri,
-                type: mime.getType(frontAdharUri),
-                name: frontAdharUri.split("/").pop()
-            });
-            formData.append('mPanCard', {
-                uri: panUri,
-                type: mime.getType(panUri),
-                name: panUri.split("/").pop()
-            });
-            formData.append('mFssai', {
-                uri: frontAdharUri,
-                type: mime.getType(frontAdharUri),
-                name: frontAdharUri.split("/").pop()
-            });
-            formData.append('blankCheck', {
-                uri: backAdharUri,
-                type: mime.getType(backAdharUri),
-                name: backAdharUri.split("/").pop()
-            });
 
-            callAxiosWithFormData(API_CONSTANTS.merchant, formData).then(res => {
-                console.log("res", res)
-                let data = res.data
-                if (data.status === "success") {
-                    setResStatus(true)
-                    setResMesg("Success")
-                    // setServerMsg(responce.message)
-                    setTimeout(() => {
-                        setResStatus(false)
-                        navigation.navigate("AfterRegistration")
-                    }, 3000);
-                    dispatch(removefadhar(null))
-                    dispatch(removebadhar(null))
-                    dispatch(removepan(null))
-                    dispatch(removeMPan(null))
-                    dispatch(removecheque(null))
-                    dispatch(removeFssai(null))
-                    dispatch(removemImg(null))
-
+            const addFileToFormData = (key, fileUri) => {
+                if (fileUri) {
+                    formData.append(key, {
+                        uri: fileUri,
+                        type: mime.getType(fileUri),
+                        name: fileUri.split("/").pop(),
+                    });
                 }
+            };
 
+            addFileToFormData('adharFront', frontAdharUri);
+            addFileToFormData('adharBack', backAdharUri);
+            addFileToFormData('panCard', panUri);
+            addFileToFormData('mImage', merchantImg);
+            addFileToFormData('mPanCard', mPanImg);
+            addFileToFormData('mFssai', fassImg);
+            addFileToFormData('blankCheck', cheque);
 
-            }).catch((err) => { console.log(err) })
+            console.log("Form data being sent:", formData);
+
+            const response = await callAxiosWithFormDataRegister(API_CONSTANTS.merchant, formData);
+            const data = response.data;
+
+            if (data.status === "success") {
+                setActive(false);
+                setResStatus(true);
+                setResMesg("Success");
+                ToastAndroid.show("Registration Successful!", ToastAndroid.SHORT);
+                navigation.navigate("AfterRegistration");
+
+                dispatch(removefadhar(null));
+                dispatch(removebadhar(null));
+                dispatch(removepan(null));
+                dispatch(removeMPan(null));
+                dispatch(removecheque(null));
+                dispatch(removeFssai(null));
+                dispatch(removemImg(null));
+            } else {
+                setActive(false);
+                setResStatus(true);
+                setResMesg("Fail");
+                ToastAndroid.show("Registration Failed: " + data.message, ToastAndroid.SHORT);
+            }
+        } catch (error) {
+            setActive(false);
+            console.error('Error during registration:', error);
+            ToastAndroid.show("Network problem. Please try again later.", ToastAndroid.SHORT);
         }
-    }
-    const handlenavigation = () => {
-        navigation.navigate("AfterRegistration")
+    };
+
+    const handlenavigation = (mes) => {
+        mes === "Success" ?
+            navigation.navigate("AfterRegistration") : setResStatus(false)
+
 
     }
     return (
@@ -339,6 +332,11 @@ const StepperForm = () => {
                 </Text>
             )}
 
+            {isactive && <View style={{ position: 'absolute', top: '50%', left: '50%', zIndex: 9, }}>
+
+                {/* <PacmanIndicator size={70}
+                    color={colors.Primary} /> */}
+            </View>}
             <ProgressSteps>
                 <ProgressStep label="Register" onNext={() => validateStep()} status={status} validateStep={validateStep} data={state} >
                     <View style={{}}>
@@ -386,7 +384,7 @@ const StepperForm = () => {
             {resStatus &&
                 <CustomAlert
                     displayMsg={resMesg}
-                    dismissAlert={() => handlenavigation()}
+                    dismissAlert={() => handlenavigation(resMesg)}
                     message={serverMsg}
                 />
             }

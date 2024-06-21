@@ -27,6 +27,7 @@ import PersonalInfo from '../pages/Forms/personalInfo';
 import MenuItems from '../screens/menuItems';
 import StepperForm from '../pages/Forms/stepperForm';
 import AfterRegistration from '../screens/afterRegistration';
+import Profile from '../screens/Profile/profile';
 
 
 
@@ -62,6 +63,7 @@ const RootNavigation = () => {
       <Stack.Screen name='MenuItems' component={MenuItems}/>
       <Stack.Screen name='StepperForm' component={StepperForm}/>
       <Stack.Screen name='AfterRegistration' component={AfterRegistration}/>
+      <Stack.Screen name='Profile' component={Profile}/>
     </Stack.Navigator>
 
   )

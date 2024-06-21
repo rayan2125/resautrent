@@ -5,7 +5,7 @@ import { useNavigation } from '@react-navigation/native'
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import colors from '../../assets/config/colors';
 import { useDispatch, useSelector } from 'react-redux';
-import { adharCard, fadharCard, panCard, removefadhar, removepan } from '../../redux/Reducers/perInfoReducers';
+import {fadharCard,removefadhar  } from '../../redux/Reducers/perInfoReducers';
 
 const FrontAdharCardForm = () => {
     let dispatch = useDispatch()
@@ -20,8 +20,8 @@ const FrontAdharCardForm = () => {
         const options = {
             mediaType: 'photo',
             includeBase64: false,
-            maxHeight: 2000,
-            maxWidth: 2000,
+            maxHeight: 1000,
+            maxWidth: 1000,
         }; launchCamera(options, (response) => {
             if (response.didCancel) {
 

@@ -25,12 +25,13 @@ export default OrderMenu = ({ name, down, source,onPress     }) => {
             <View style={styles.card}>
                 <View style={styles.cardHeader}>
 
-                    <View style={styles.iconContainer}>
+                    {/* <View style={styles.iconContainer}>
                         <Icon source={source}
                             color='white'
                             size={30}
                         />
-                    </View>
+                    </View> */}
+                    <Image source={source}  style={{height:100,width:100}}/>
                     <View style={{ flex: 1, alignItems: 'center', justifyContent: "center" }}>
                         <Text style={{ color: colors.green, fontSize: 16, fontWeight: "700" }}>{name}</Text>
                         <Text style={{ color: colors.green, fontSize: 16, fontWeight: "700" }}>{down}</Text>
@@ -82,12 +83,12 @@ const styles = StyleSheet.create({
             width: 2,
         },
         borderColor: "black",
-        borderWidth: 1,
+        // borderWidth: 1,
         borderRadius: 10,
         shadowOpacity: 0.5,
         shadowRadius: 4,
         marginVertical: 8,
-        backgroundColor: '#FEF8E6',
+        backgroundColor: '#f7e3a6',
         flexBasis: '40%',
         marginHorizontal: 10,
     },

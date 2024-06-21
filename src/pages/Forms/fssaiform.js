@@ -15,8 +15,8 @@ const FssaiForm = () => {
         const options = {
             mediaType: 'photo',
             includeBase64: false,
-            maxHeight: 2000,
-            maxWidth: 2000,
+            maxHeight: 1000,
+            maxWidth: 1000,
         }; launchCamera(options, (response) => {
             if (response.didCancel) {
 
@@ -34,7 +34,7 @@ const FssaiForm = () => {
    
     const handleRemove = () => {
 
-        dispatch(removecheque(null))
+        dispatch(removeFssai(null))
     }
     return (
         <View style={{ flex: 1 }}>

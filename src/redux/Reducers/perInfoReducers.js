@@ -48,7 +48,7 @@ const personalInfoRdc = createSlice({
             state.panInfo = action.payload
         },
         removecheque(state, action) {
-            state.blankCheque = action.payload
+            state.chequeInfo = action.payload
         },
         removemImg(state, action) {
             state.mImage = action.payload

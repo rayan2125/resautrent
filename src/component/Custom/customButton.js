@@ -18,7 +18,7 @@ const CustomButton = ({ btnName, onPress, backgroundColor, source ,borderColor,b
                     borderWidth:borderWidth,
                     paddingHorizontal:5,paddingVertical:8, borderRadius: 25
                 }}>
-                <Text style={{ color: textColor, marginHorizontal: 10, fontSize: fontSize }}>{btnName}</Text>
+                <Text style={{ color: textColor, marginHorizontal: 10, fontSize: fontSize, }}>{btnName}</Text>
                 <Icon
                     // size={20}
                     source={source}

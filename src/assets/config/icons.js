@@ -9,5 +9,8 @@ delete:"trash-can",
 upload:"cloud-upload",
 img:"camera-image",
 video:"video",
-plus:"plus"
+plus:"plus",
+cart:"cart",
+cancel:"cancel",
+bank:'bank-transfer'
 }

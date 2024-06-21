@@ -226,14 +226,14 @@ const Subcription = () => {
             <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
                 <TouchableOpacity
                     onPress={() => navigation.pop()}
-                    style={{ backgroundColor: colors.Primary, height: 45, width: 45, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}>
+                    style={{ backgroundColor: colors.green, height: 45, width: 45, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}>
                     <Icon source="chevron-left" size={25} color={colors.White} />
                 </TouchableOpacity>
 
                 {screens && screens === 1 && <TouchableOpacity
                     onPress={handleNavigation}
-                    style={{ borderColor: colors.Primary, borderWidth: 5, height: 45, width: 45, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}>
-                    <Icon source="plus" size={25} color={colors.Primary} />
+                    style={{ borderColor: colors.green, borderWidth: 5, height: 45, width: 45, borderRadius: 100, justifyContent: 'center', alignItems: 'center' }}>
+                    <Icon source="plus" size={25} color={colors.green} />
                 </TouchableOpacity>}
             </View>
             {
@@ -325,8 +325,9 @@ const Subcription = () => {
                                 />
                             ) : (
                                 <>
-                                    <Text>Please add your subscription list</Text>
-                                    <TouchableOpacity onPress={() => handleNavigation()} style={{ backgroundColor: 'blue', padding: 10, borderRadius: 5, marginTop: 10 }}>
+                                <Image source={require("../assets/images/empty.png")} style={{height:300,width:300}}/>
+                                    <Text style={{fontSize:18,color:colors.green}}>Please add your subscription list</Text>
+                                    <TouchableOpacity onPress={() => handleNavigation()} style={{ backgroundColor: '#027F25', padding: 10, borderRadius: 5, marginTop: 10 }}>
                                         <Text style={{ color: 'white' }}>Add Now</Text>
                                     </TouchableOpacity>
                                 </>

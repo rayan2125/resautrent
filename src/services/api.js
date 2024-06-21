@@ -131,6 +131,53 @@ async function callAxiosWithFormData(endPoint, reqData,auth = true) {
     };
   }
 }
+async function callAxiosWithFormDataRegister(endPoint, reqData) {
+  try {
+    const [baseUrl] = await Promise.all([getBaseUrl()]);
+  
+
+
+
+    const response = await axios.post(
+      baseUrl + endPoint,
+      reqData,
+ 
+      {
+        headers: {
+         
+          'Accept':'*/*',
+          'Content-Type':'multipart/form-data',
+          'accept-encoding': 'gzip, deflate, br',
+          
+          
+        }
+        
+      }
+    );
+
+
+
+    if (response.data.access_token) {
+      return { success: true, data: response.data, message: response.data.message };
+    } else if (response.data.aaData) {
+      return { success: true, data: response.data };
+    } else if (response.data.status === "success") {
+      return { success: true, data: response.data, message: response.data.message };
+    } else {
+      return { success: false, data: response.data, message: response.data.message };
+    }
+  } catch (error) {
+    return {
+      success: false,
+      data: {
+        message: error.message,
+        error: error,
+        errorme:error.message
+        // error:error.message
+      }
+    };
+  }
+}
 
 
 
@@ -212,5 +259,6 @@ export {
   callAxiosGet,
   callAxiosWithFormData,
   callAxiosWithoutSession,
-  callAxiosGetWithoutSession
+  callAxiosGetWithoutSession,
+  callAxiosWithFormDataRegister
 };

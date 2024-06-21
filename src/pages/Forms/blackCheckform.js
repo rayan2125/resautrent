@@ -19,8 +19,8 @@ const BlackCheckForm = () => {
         const options = {
             mediaType: 'photo',
             includeBase64: false,
-            maxHeight: 2000,
-            maxWidth: 2000,
+            maxHeight: 1000,
+            maxWidth: 1000,
         }; launchCamera(options, (response) => {
             if (response.didCancel) {
 
@@ -44,7 +44,7 @@ const BlackCheckForm = () => {
             <View style={{  }}>
 
                 <View style={{  }}>
-                    <Text style={{ color: "black", fontSize: 25, fontWeight: "400" }}>Black Check</Text>
+                    <Text style={{ color: "black", fontSize: 25, fontWeight: "400" }}>Blank Check</Text>
                     <View style={{ gap: 15, marginTop: 10 }}>
 
                         <View style={{ paddingVertical: selector === null ? 20 : 10, paddingHorizontal: selector === null ? 20 : 0, borderRadius: 15, borderColor: "grey", borderWidth: 1, borderStyle: "dashed", }}>
